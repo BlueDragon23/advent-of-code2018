@@ -10,7 +10,7 @@ fn main() {
     let mut initial_state = String::new();
     reader.read_line(&mut initial_state);
 
-    let mut initial = initial_state.trim_start_matches("initial state: ");
+    let initial = initial_state.trim_start_matches("initial state: ");
     let mut state: Vec<_> = initial.chars().map(|c| if c == '#' { true } else { false } ).collect();
     // Start at -200
     let start_point = -40;
@@ -47,13 +47,13 @@ fn main() {
             };
             rules.insert(key_num, value_bool);
         });
-    println!("{}", state.iter().fold("0: ".to_owned(), |acc, b| if *b == true { acc + "#" } else { acc + "." }));
+    // println!("{}", state.iter().fold("0: ".to_owned(), |acc, b| if *b == true { acc + "#" } else { acc + "." }));
     
-    for i in 0..20 {
+    for i in 0..(50_000_000_000 as i64) {
         let mut index = 0;
-        state = state.iter().skip(2).map(|b| {
+        let mut new_state: Vec<_> = state.windows(5).map(|window| {
             let mut j = 4;
-            let key = state.iter().skip(index).take(5).fold(0, |acc, prev_bool| {
+            let key = window.iter().fold(0, |acc, prev_bool| {
                 let mut next = acc;
                 if *prev_bool == true {
                     next = acc + i32::pow(2, j);
@@ -64,9 +64,15 @@ fn main() {
             index += 1;
             *rules.get(&key).unwrap()
         }).collect();
-        state.insert(0, false);
-        state.insert(0, false);
-        println!("{}", state.iter().fold((i + 1).to_string() + ": ", |acc, b| if *b == true { acc + "#" } else { acc + "." }));
+        let mut next_state = vec![false, false];
+        next_state.extend(new_state);
+        next_state.push(false);
+        next_state.push(false);
+        state = next_state;
+        if i % 1_000_000 == 0 {
+            println!("{}", i);
+        }
+        // println!("{}", state.iter().fold((i + 1).to_string() + ": ", |acc, b| if *b == true { acc + "#" } else { acc + "." }));
     }
     let mut index = start_point;
     let result = state.iter().fold(0, |acc, b| {
