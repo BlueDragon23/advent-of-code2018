@@ -2,6 +2,7 @@ use std::io::BufRead;
 use std::fs::File;
 use std::io::BufReader;
 use std::collections::HashMap;
+use std::time::Instant;
 
 fn main() {
     let f = File::open("input/input.txt").unwrap();
@@ -49,6 +50,7 @@ fn main() {
         });
     // println!("{}", state.iter().fold("0: ".to_owned(), |acc, b| if *b == true { acc + "#" } else { acc + "." }));
     
+    let mut start = Instant::now();
     for i in 0..(50_000_000_000 as i64) {
         let mut index = 0;
         let mut new_state: Vec<_> = state.windows(5).map(|window| {
@@ -64,13 +66,17 @@ fn main() {
             index += 1;
             *rules.get(&key).unwrap()
         }).collect();
-        let mut next_state = vec![false, false];
+        let mut next_state = Vec::with_capacity(state.len());
+        next_state.push(false);
+        next_state.push(false);
         next_state.extend(new_state);
         next_state.push(false);
         next_state.push(false);
         state = next_state;
         if i % 1_000_000 == 0 {
+            println!("{:?}", start.elapsed());
             println!("{}", i);
+            start = Instant::now();
         }
         // println!("{}", state.iter().fold((i + 1).to_string() + ": ", |acc, b| if *b == true { acc + "#" } else { acc + "." }));
     }
