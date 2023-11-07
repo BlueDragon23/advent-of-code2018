@@ -19,19 +19,19 @@ fn main() {
     let mut min_area = 100_000_000;
     let mut min_time = 0;
     let mut min_tuple = (0, 0, 0, 0);
-    for i in 1..1000000 {
+    for i in 1..100000 {
 
         let (f_min_x, f_min_y, f_max_x, f_max_y) = tuples.iter().fold((1_000_000, 1_000_000, -1_000_000, -1_000_000), |(min_x, min_y, max_x, max_y), (sx, sy, vx, vy)| {
             let x = sx + vx * i;
             let y = sy + vy * i;
-            return (min(x, min_x), min(y, min_y), max(x, max_x), max(y, max_y));
+            (min(x, min_x), min(y, min_y), max(x, max_x), max(y, max_y))
         });
         let area = (f_max_x - f_min_x) * (f_max_y - f_min_y);
         if area < min_area {
             min_time = i;
             min_area = area;
             min_tuple = (f_min_x, f_min_y, f_max_x, f_max_y);
-            println!("Shrunk to: {}, {}, {:?}", min_area, min_time, min_tuple);
+            //println!("Shrunk to: {}, {}, {:?}", min_area, min_time, min_tuple);
         }
     }
     if min_time == 0 {
@@ -40,7 +40,8 @@ fn main() {
     println!("{}, {}, {:?}", min_area, min_time, min_tuple);
     let (min_x, min_y, max_x, max_y) = min_tuple;
     let width = max_x - min_x;
-    let mut result = vec!['.'; (min_area + width) as usize];
+    let height = max_y - min_y;
+    let mut result = vec!['.'; (height * width + width) as usize];
     // let height = max_y - min_y;
     tuples.iter().for_each(|(sx, sy, vx, vy)| {
         let x = sx + vx * min_time;
